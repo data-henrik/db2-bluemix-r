@@ -5,16 +5,16 @@
 ## Data for multiple stations is shown in different colors
 ## 
 library(ggplot2)
-library(bluR)
+library(ibmdbR)
 
 ## initialize DB2 connection and environment
-con <- bluConnect("BLUDB","","")
-bluAnalyticsInit(con)
+con <- idaConnect("BLUDB","","")
+idaInit(con)
 
 ## query DB2 weather data and fetch min/max values of min/max values
 ## (lower/upper boundary each) 
 query<-paste('select max(lufttemperatur_maximum) as maxmax,min(lufttemperatur_minimum) as minmin,min(lufttemperatur_maximum) as minmax,max(lufttemperatur_minimum) as maxmin,tag,sid from (select lufttemperatur_maximum, lufttemperatur_minimum, day(mdatum) as tag,sid from blu06039.klima where month(mdatum)=9) group by tag,sid order by tag asc') 
-df <- bluQuery(query,as.is=F)
+df <- idaQuery(query,as.is=F)
 
 ## Some plotting needs to be done
 jpeg(type='cairo',"tempe.jpg",width=800,height=600) 
@@ -23,5 +23,5 @@ ggplot(df, aes(x = TAG))+ylab("Temperature")+xlab("Day")+
 
 sink('/dev/null') 
 
-bluClose(con)
+idaClose(con)
 ## connection is closed, we are done
